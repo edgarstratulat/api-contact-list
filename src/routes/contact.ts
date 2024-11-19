@@ -1,6 +1,7 @@
 import { error } from "console";
 import express from "express";
 import { readFile, writeFile } from "fs/promises";
+import { CreateContact, getContacts } from "../services/contact";
 
 const dataSource = "./data/list.txt";
 
@@ -38,26 +39,13 @@ router.post("/", async (req, res) => {
   }
 
   //Processamento de dados
-  let list: string[] = [];
-  try {
-    const data = await readFile(dataSource, { encoding: "utf8" });
-
-    list = data.split("\n");
-  } catch (err) {}
-
-  list.push(name, phone);
-  await writeFile(dataSource, list.join("\n"));
+  await CreateContact(name, phone);
 
   res.status(201).json({ contact: name, phone: phone });
 });
 
 router.get("/", async (req, res) => {
-  let list: string[] = [];
-  try {
-    const data = await readFile(dataSource, { encoding: "utf8" });
-
-    list = data.split("\n");
-  } catch (err) {}
+  let list = await getContacts();
 
   res.status(200).json({ contact: list });
 });
@@ -72,12 +60,7 @@ router.delete("/", async (req, res) => {
     return;
   }
 
-  let list: string[] = [];
-  try {
-    const data = await readFile(dataSource, { encoding: "utf8" });
-
-    list = data.split("\n");
-  } catch (err) {}
+  let list = await getContacts();
 
   list = list.filter((item) => {
     return item.toLowerCase() !== name && item !== phone;
