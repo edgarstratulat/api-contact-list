@@ -80,7 +80,7 @@ router.delete("/", async (req, res) => {
   } catch (err) {}
 
   list = list.filter((item) => {
-    return item !== name && item !== phone;
+    return item.toLowerCase() !== name && item !== phone;
   });
 
   await writeFile(dataSource, list.join("\n"));
